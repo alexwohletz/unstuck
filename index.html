@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Break through task paralysis with AI-powered 15-minute steps. Free, private, no sign-up required.">
+  <meta name="theme-color" content="#4a7c6f">
+  <title>Unstuck - Break Through Task Paralysis</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <h1 class="logo">UNSTUCK</h1>
+      <button id="theme-toggle" class="icon-btn" aria-label="Toggle dark mode" title="Toggle dark mode">
+        <span class="theme-icon-light">&#9788;</span>
+        <span class="theme-icon-dark">&#9790;</span>
+      </button>
+    </header>
+
+    <main class="main-content">
+      <!-- Screen 1: Input State -->
+      <section id="screen-input" class="screen screen-input active">
+        <p class="tagline">Break through task paralysis</p>
+
+        <form id="task-form" class="task-form">
+          <label for="task-input" class="sr-only">What are you stuck on?</label>
+          <textarea
+            id="task-input"
+            class="task-input"
+            placeholder="I need to file my taxes but I have receipts everywhere and I don't know where to start..."
+            rows="5"
+            required
+            aria-describedby="input-hint"
+          ></textarea>
+          <p id="input-hint" class="input-hint">Describe what you're stuck on. Even one sentence helps.</p>
+
+          <button type="submit" id="submit-btn" class="btn btn-primary">
+            Break it down
+          </button>
+        </form>
+
+        <div id="error-message" class="error-message" role="alert" aria-live="polite" hidden></div>
+
+        <!-- Settings Panel -->
+        <details class="settings-panel">
+          <summary class="settings-toggle">Settings</summary>
+          <div class="settings-content">
+            <div class="setting-group">
+              <label for="api-key-input" class="setting-label">Gemini API Key</label>
+              <div class="api-key-wrapper">
+                <input
+                  type="password"
+                  id="api-key-input"
+                  class="api-key-input"
+                  placeholder="Enter your API key"
+                  autocomplete="off"
+                >
+                <button type="button" id="toggle-key-visibility" class="icon-btn" aria-label="Show API key">
+                  <span class="eye-icon">&#128065;</span>
+                </button>
+                <button type="button" id="clear-key" class="icon-btn" aria-label="Clear API key" title="Clear key">
+                  &times;
+                </button>
+              </div>
+              <p class="setting-hint">
+                <span class="lock-icon">&#128274;</span>
+                Stored locally in your browser. Never sent anywhere except Google.
+              </p>
+              <p class="setting-hint">
+                <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">
+                  Get a free API key &rarr;
+                </a>
+              </p>
+            </div>
+
+            <hr class="setting-divider">
+
+            <div class="setting-group">
+              <label for="timer-duration" class="setting-label">Timer duration</label>
+              <div class="timer-duration-wrapper">
+                <select id="timer-duration" class="timer-duration-select">
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="15" selected>15</option>
+                  <option value="20">20</option>
+                  <option value="25">25</option>
+                  <option value="30">30</option>
+                </select>
+                <span>minutes</span>
+              </div>
+            </div>
+
+            <div class="setting-group">
+              <label class="setting-checkbox-label">
+                <input type="checkbox" id="sound-enabled" checked>
+                <span>Sound notification when timer ends</span>
+              </label>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <!-- Screen 2: Loading State -->
+      <section id="screen-loading" class="screen screen-loading" hidden>
+        <p class="loading-text">Breaking it down...</p>
+        <div class="spinner" aria-label="Loading">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </section>
+
+      <!-- Screen 3: Step View -->
+      <section id="screen-step" class="screen screen-step" hidden>
+        <div class="step-header">
+          <span id="step-indicator" class="step-indicator">Step 1 of 5</span>
+        </div>
+
+        <div class="step-progress-bar">
+          <div id="progress-fill" class="progress-fill" style="width: 20%"></div>
+        </div>
+
+        <div class="step-main">
+          <p class="step-label">Your first 15 minutes:</p>
+          <div id="step-content" class="step-content">
+            <!-- Step content inserted here -->
+          </div>
+        </div>
+
+        <div class="timer-section">
+          <div id="timer-display" class="timer-display">15:00</div>
+          <div class="timer-controls">
+            <button id="timer-start" class="btn btn-secondary">Start timer</button>
+            <button id="timer-pause" class="btn btn-secondary" hidden>Pause</button>
+            <button id="timer-reset" class="btn btn-ghost" hidden>Reset</button>
+          </div>
+        </div>
+
+        <div class="step-actions">
+          <button id="prev-step" class="btn btn-ghost" disabled>&larr; Previous</button>
+          <button id="done-step" class="btn btn-primary">Done &check;</button>
+          <button id="next-step" class="btn btn-ghost">Next &rarr;</button>
+        </div>
+
+        <hr class="section-divider">
+
+        <div class="secondary-actions">
+          <button id="show-all-steps" class="btn btn-ghost">Show all steps</button>
+          <button id="export-btn" class="btn btn-ghost">Export</button>
+        </div>
+
+        <button id="start-over" class="btn btn-link">Start over</button>
+      </section>
+
+      <!-- Screen 4: All Steps View -->
+      <section id="screen-all-steps" class="screen screen-all-steps" hidden>
+        <div class="all-steps-header">
+          <span>All Steps</span>
+        </div>
+
+        <h2 id="task-summary" class="task-summary">Task summary</h2>
+
+        <ul id="steps-list" class="steps-list" role="list">
+          <!-- Steps inserted here -->
+        </ul>
+
+        <p id="encouragement" class="encouragement"></p>
+
+        <hr class="section-divider">
+
+        <div class="secondary-actions">
+          <button id="focus-current" class="btn btn-secondary">Focus on current step</button>
+          <button id="export-all-btn" class="btn btn-ghost">Export</button>
+        </div>
+
+        <button id="start-over-all" class="btn btn-link">Start over</button>
+      </section>
+
+      <!-- API Key Prompt Modal -->
+      <div id="api-key-modal" class="modal" hidden>
+        <div class="modal-backdrop"></div>
+        <div class="modal-content" role="dialog" aria-labelledby="modal-title" aria-modal="true">
+          <h2 id="modal-title" class="modal-title">One quick thing</h2>
+          <p class="modal-text">
+            To break down your task, Unstuck needs a Gemini API key.
+            It's free and takes about 30 seconds to get.
+          </p>
+          <ol class="modal-steps">
+            <li>Go to <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio</a></li>
+            <li>Sign in with your Google account</li>
+            <li>Click "Create API Key"</li>
+            <li>Copy and paste it below</li>
+          </ol>
+          <div class="modal-input-group">
+            <label for="modal-api-key" class="sr-only">API Key</label>
+            <input
+              type="password"
+              id="modal-api-key"
+              class="api-key-input"
+              placeholder="Paste your API key here"
+              autocomplete="off"
+            >
+          </div>
+          <p class="modal-privacy">
+            <span class="lock-icon">&#128274;</span>
+            Your key stays in your browser. We never see it.
+          </p>
+          <div class="modal-actions">
+            <button id="modal-cancel" class="btn btn-ghost">Cancel</button>
+            <button id="modal-save" class="btn btn-primary">Save & continue</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Export Modal -->
+      <div id="export-modal" class="modal" hidden>
+        <div class="modal-backdrop"></div>
+        <div class="modal-content" role="dialog" aria-labelledby="export-modal-title" aria-modal="true">
+          <h2 id="export-modal-title" class="modal-title">Export your steps</h2>
+          <div class="export-preview">
+            <pre id="export-preview-content"></pre>
+          </div>
+          <div class="modal-actions">
+            <button id="export-cancel" class="btn btn-ghost">Close</button>
+            <button id="export-copy" class="btn btn-secondary">Copy to clipboard</button>
+            <button id="export-download" class="btn btn-primary">Download .md</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Toast notifications -->
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
