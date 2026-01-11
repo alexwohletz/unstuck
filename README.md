@@ -4,7 +4,7 @@
 
 Unstuck is a free, privacy-first web app that helps people overwhelmed by a task break it down into small, actionable steps. Each step is designed to take 15 minutes or less, with the first step being almost trivially easy to start.
 
-[Try Unstuck](https://awohletz.github.io/unstuck) | [View the Prompt](prompts/breakdown.md)
+[Try Unstuck](unstuck-tasks.org) | [View the Prompt](prompts/breakdown.md)
 
 ---
 
